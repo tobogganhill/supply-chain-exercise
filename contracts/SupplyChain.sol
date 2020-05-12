@@ -122,21 +122,40 @@ contract SupplyChain {
     if the buyer paid enough, and check the value after the function is called to make sure the buyer is
     refunded any excess ether sent. Remember to call the event associated with this function!*/
 
-  function buyItem(uint sku)
-    public payable
-  {}
-
-  /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
-  is the seller. Change the state of the item to shipped. Remember to call the event associated with this function!*/
-  function shipItem(uint sku)
+  function buyItem(uint sku) 
     public
-  {}
+        payable
+        forSale(sku)
+        paidEnough(items[sku].price)
+        checkValue(sku)
+  {
+   emit Sold(sku);
+        items[sku].buyer = msg.sender;
+        items[sku].state = uint(State.Sold);
+        items[sku].seller.transfer(items[sku].price);
+}
+
+  // Add 2 modifiers to check if the item is sold already, and that the person calling this function
+  // is the seller. Change the state of the item to shipped. Remember to call the event associated with this function!
+  function shipItem(uint sku)
+        public
+        sold(sku)
+        verifyCaller(items[sku].seller)
+    {
+        emit Shipped(sku);
+        items[sku].state = uint(State.Shipped);
+    }
 
   /* Add 2 modifiers to check if the item is shipped already, and that the person calling this function
   is the buyer. Change the state of the item to received. Remember to call the event associated with this function!*/
-  function receiveItem(uint sku)
-    public
-  {}
+   function receiveItem(uint sku)
+        public
+        shipped(sku)
+        verifyCaller(items[sku].buyer)
+    {
+        emit Received(sku);
+        items[sku].state = uint(State.Received);
+    }
 
   /* We have these functions completed so we can run tests, just ignore it :) */
   function fetchItem(uint _sku) public view returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) {
