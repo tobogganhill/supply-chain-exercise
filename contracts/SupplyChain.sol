@@ -1,21 +1,17 @@
-/*
-    This exercise has been updated to use Solidity version 0.5
-    Breaking changes from 0.4 to 0.5 can be found here: 
-    https://solidity.readthedocs.io/en/v0.5.0/050-breaking-changes.html
-*/
 
 pragma solidity ^0.5.0;
 
 contract SupplyChain {
 
-  /* set owner */
+  // set owner 
   address owner;
 
-  /* Add a variable called skuCount to track the most recent sku # */
+  // Add a variable called skuCount to track the most recent sku #
+  uint skuCount;
 
-  /* Add a line that creates a public mapping that maps the SKU (a number) to an Item.
-     Call this mappings items
-  */
+  // mapping that maps the SKU # to an Item
+  mapping (uint => Item) items;
+
 
   /* Add a line that creates an enum called State. This should have 4 states
     ForSale
