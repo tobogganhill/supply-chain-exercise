@@ -78,8 +78,17 @@ contract SupplyChain {
    so checking that Item.State == ForSale is not sufficient to check that an Item is for sale.
    Hint: What item properties will be non-zero when an Item has been added?
    */
-  modifier forSale
-  modifier sold
+  modifier forSale (uint _sku) {
+        require(items[_sku].state == uint(State.ForSale));
+        _;
+  }
+
+  modifier sold (uint _sku) {
+        require(items[_sku].state == uint(State.Sold));
+        _;
+  }
+  
+
   modifier shipped
   modifier received
 
