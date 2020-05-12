@@ -89,14 +89,25 @@ contract SupplyChain {
   }
   
 
-  modifier shipped
-  modifier received
+  modifier shipped (uint _sku) {
+        require(items[_sku].state == uint(State.Shipped));
+        _;
+  }
 
+  modifier received (uint _sku) {
+        require(items[_sku].state == uint(State.Received));
+        _;
+  }
 
   constructor() public {
-    /* Here, set the owner as the person who instantiated the contract
-       and set your skuCount to 0. */
+
+    // Set the owner as the person who instantiated the contract
+    // and set skuCount to 0.
+
+      owner = msg.sender;
+      skuCount = 0;
   }
+
 
   function addItem(string memory _name, uint _price) public returns(bool){
     emit LogForSale(skuCount);
@@ -112,7 +123,7 @@ contract SupplyChain {
     refunded any excess ether sent. Remember to call the event associated with this function!*/
 
   function buyItem(uint sku)
-    public
+    public payable
   {}
 
   /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
