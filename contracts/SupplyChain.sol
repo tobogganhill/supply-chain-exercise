@@ -12,36 +12,62 @@ contract SupplyChain {
   // mapping that maps the SKU # to an Item
   mapping (uint => Item) items;
 
+  //   Create an enum called State with 4 states:
+  //   ForSale
+  //   Sold
+  //   Shipped
+  //   Received
+  //   (declaring them in this order is important for testing)
+ 
+  enum State {
+      ForSale,
+      Sold,
+      Shipped,
+      Received
+    };
 
-  /* Add a line that creates an enum called State. This should have 4 states
-    ForSale
-    Sold
-    Shipped
-    Received
-    (declaring them in this order is important for testing)
-  */
+  // Create a struct named Item: name, sku, price, state, seller, and buyer
+  // "payable" addresses that will be handling value transfer
+  
+ struct Item {
+        string name;
+        uint sku;
+        uint price;
+        uint state;
+        address payable seller;
+        address payable buyer; 
+    }
 
-  /* Create a struct named Item.
-    Here, add a name, sku, price, state, seller, and buyer
-    We've left you to figure out what the appropriate types are,
-    if you need help you can ask around :)
-    Be sure to add "payable" to addresses that will be handling value transfer
-  */
+  // Create 4 events with the same name as each possible State
+  // Each event should accept one argument, the sku */
 
-  /* Create 4 events with the same name as each possible State (see above)
-    Prefix each event with "Log" for clarity, so the forSale event will be called "LogForSale"
-    Each event should accept one argument, the sku */
+    event LogForSale (uint sku);
+    event LogSold (uint sku);
+    event LogShipped (uint sku);
+    event LogReceived (uint sku);
 
 /* Create a modifer that checks if the msg.sender is the owner of the contract */
 
-  modifier verifyCaller (address _address) { require (msg.sender == _address); _;}
-
-  modifier paidEnough(uint _price) { require(msg.value >= _price); _;}
-  modifier checkValue(uint _sku) {
-    //refund them after pay for item (why it is before, _ checks for logic before func)
+  modifier isOwner (address _owner) {
+    require (msg.sender = _owner, 'Must be owner to run the contract.');
     _;
-    uint _price = items[_sku].price;
-    uint amountToRefund = msg.value - _price;
+  }
+
+  modifier verifyCaller (address _address) {
+     require (msg.sender == _address, 'Caller not verified.');
+      _;
+  }
+
+  modifier paidEnough(uint _price) {
+     require(msg.value >= _price, 'Amount paid must be greater than or equal to price.');
+     _;
+  }
+
+  modifier checkValue(uint _sku) {
+    // refund after item paid for
+    // underscore at beginning to run this logic at the beginning of the function)
+    _;
+    uint amountToRefund = msg.value - items[_sku].price;;
     items[_sku].buyer.transfer(amountToRefund);
   }
 
